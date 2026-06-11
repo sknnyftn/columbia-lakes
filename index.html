@@ -1,226 +1,44 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Columbia Lakes Dedicatory Instrument Explorer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root, [data-theme="light"] {
-      --color-bg:#f7f6f2; --color-surface:#f9f8f5; --color-surface-2:#fbfbf9; --color-surface-offset:#f3f0ec;
-      --color-border:#d4d1ca; --color-divider:#dcd9d5; --color-text:#28251d; --color-text-muted:#696760;
-      --color-text-faint:#908f89; --color-primary:#01696f; --color-primary-hover:#0c4e54; --color-primary-highlight:#cedcd8;
-      --color-warning:#964219; --color-blue:#006494; --color-purple:#7a39bb; --color-success:#437a22;
-      --shadow-sm:0 1px 2px rgba(0,0,0,.06); --shadow-md:0 8px 24px rgba(0,0,0,.08); --radius:16px;
-    }
-    [data-theme="dark"] {
-      --color-bg:#171614; --color-surface:#1c1b19; --color-surface-2:#201f1d; --color-surface-offset:#22211f;
-      --color-border:#393836; --color-divider:#262523; --color-text:#e0ddd7; --color-text-muted:#aaa59c;
-      --color-text-faint:#7d786f; --color-primary:#4f98a3; --color-primary-hover:#68aeb8; --color-primary-highlight:#313b3b;
-      --color-warning:#bb653b; --color-blue:#5591c7; --color-purple:#a86fdf; --color-success:#6daa45;
-      --shadow-sm:0 1px 2px rgba(0,0,0,.28); --shadow-md:0 12px 32px rgba(0,0,0,.35);
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--color-bg);color:var(--color-text);line-height:1.55}
-    a{color:var(--color-primary);text-decoration:none}
-    a:hover{color:var(--color-primary-hover)}
-    .shell{display:grid;grid-template-columns:minmax(0,1fr) 360px;min-height:100vh}
-    .main{padding:28px 28px 80px;min-width:0}
-    .side{position:sticky;top:0;height:100vh;padding:24px;border-left:1px solid var(--color-divider);background:var(--color-surface)}
-    .topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:24px}
-    .title h1{font:400 clamp(2rem,4vw,4.2rem)/1 Instrument Serif,serif;margin:0 0 8px}
-    .title p{margin:0;max-width:75ch;color:var(--color-text-muted)}
-    .controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 28px}
-    .chip,.toggle{border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);padding:10px 14px;border-radius:999px;cursor:pointer}
-    .chip.active{background:var(--color-primary-highlight);border-color:var(--color-primary);color:var(--color-text)}
-    .hero-flow{display:grid;grid-template-columns:repeat(3,minmax(240px,1fr));gap:16px;margin-bottom:28px}
-    .flow-card{background:linear-gradient(180deg,var(--color-surface),var(--color-surface-2));border:1px solid var(--color-border);padding:18px;border-radius:var(--radius);box-shadow:var(--shadow-sm)}
-    .flow-card h3{margin:0 0 8px;font-size:1.02rem}
-    .flow-card p{margin:0;color:var(--color-text-muted)}
-    .section{margin-top:28px}
-    .section h2{font-size:1.2rem;margin:0 0 14px}
-    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-    .card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px;min-height:250px}
-    .meta{display:flex;gap:8px;flex-wrap:wrap}
-    .badge{font-size:.74rem;padding:4px 8px;border-radius:999px;background:var(--color-surface-offset);border:1px solid var(--color-border);color:var(--color-text-muted)}
-    .badge.original{background:color-mix(in srgb,var(--color-primary-highlight) 75%, transparent)}
-    .badge.overlay{background:color-mix(in srgb,#d8c3f0 45%, transparent)}
-    .badge.transfer{background:color-mix(in srgb,#d9e7f5 60%, transparent)}
-    .badge.policy{background:color-mix(in srgb,#f1d9c9 55%, transparent)}
-    .card h3{margin:0;font-size:1.02rem}
-    .excerpt{color:var(--color-text-muted);font-size:.95rem}
-    .links{margin-top:auto;display:flex;flex-wrap:wrap;gap:12px}
-    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--color-surface-offset);border:1px solid var(--color-border);cursor:pointer}
-    .btn:hover{background:var(--color-primary-highlight)}
-    .side h3{margin:0 0 6px;font-size:1rem}
-    .side p{color:var(--color-text-muted)}
-    .detail-card{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:16px;padding:18px}
-    .detail-card blockquote{margin:14px 0;padding-left:14px;border-left:3px solid var(--color-primary);color:var(--color-text);font-style:italic}
-    .small{font-size:.88rem;color:var(--color-text-faint)}
-    .search{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--color-border);background:var(--color-bg);color:var(--color-text);margin-bottom:14px}
-    .legend{display:grid;gap:8px;margin-top:18px}
-    .legend-item{display:flex;gap:10px;align-items:center;color:var(--color-text-muted);font-size:.92rem}
-    .dot{width:12px;height:12px;border-radius:50%}
-    .footer-note{margin-top:22px;font-size:.85rem;color:var(--color-text-faint)}
-    @media (max-width: 1100px){
-      .shell{grid-template-columns:1fr}
-      .side{position:relative;height:auto;border-left:none;border-top:1px solid var(--color-divider)}
-      .hero-flow{grid-template-columns:1fr}
-      .main{padding:20px}
-      .side{padding:20px}
-    }
-  </style>
-</head>
-<body>
-<div class="shell">
-  <main class="main">
-    <div class="topbar">
-      <div class="title">
-        <h1>Columbia Lakes instrument explorer</h1>
-        <p>This republished version adds new documents<code>files/</code> folder.</p>
-      </div>
-      <button class="toggle" data-theme-toggle aria-label="Switch theme">◐</button>
-    </div>
-
-    <input id="search" class="search" type="search" placeholder="Search by instrument number, keyword, or topic" />
-
-    <div class="controls" id="filters">
-      <button class="chip active" data-filter="all">All documents</button>
-      <button class="chip" data-filter="original">Original / amendment chain</button>
-      <button class="chip" data-filter="transfer">Authority transfer</button>
-      <button class="chip" data-filter="overlay">Operational overlays</button>
-      <button class="chip" data-filter="policy">Policies / enforcement</button>
-    </div>
-
-    <section class="hero-flow">
-      <article class="flow-card">
-        <h3>1. Declaration foundation</h3>
-        <p>Original deed restrictions and later declaration amendments remain the base source for land-use rules, assessments, architectural control, and subdivision definitions.</p>
-      </article>
-      <article class="flow-card">
-        <h3>2. Transfer and recording layer</h3>
-        <p>Developer powers and governing instruments were later assigned, recorded, and formalized through HOA filings and Texas Property Code recording steps.</p>
-      </article>
-      <article class="flow-card">
-        <h3>3. Governance and enforcement layer</h3>
-        <p>Bylaws, fining policies, and common-area rules operate as later overlays that often derive authority from the declaration, articles, and recorded dedicatory instruments.</p>
-      </article>
-    </section>
-
-    <section class="section">
-      <h2>Newly added context</h2>
-      <div class="cards" id="cards">
-
-        <article class="card" data-category="overlay transfer" data-search="2021015059 bylaws amended restated declaration rules regulations board powers texas property code">
-          <div class="meta">
-            <span class="badge overlay">Operational overlay</span>
-            <span class="badge transfer">Recorded authority</span>
-          </div>
-          <h3>2021015059 — Amended and Restated Bylaws</h3>
-          <div class="excerpt">The 2021 bylaws state they “completely replace any previously recorded Bylaws or amendments thereto,” define the Declaration by reference to Volume 1128, Page 911 and amendments, and give the board power to adopt, amend, repeal, and enforce rules and regulations for interpretation, operation, and use of lots and property.</div>
-          <div class="links">
-            <a class="btn" href="./files/2021015059-1.pdf" target="_blank" rel="noopener noreferrer">Open PDF</a>
-            <button class="btn detail-btn" data-title="2021015059 — Amended and Restated Bylaws" data-type="Operational overlay / recorded dedicatory instrument" data-file="./files/2021015059-1.pdf" data-excerpt="&quot;does hereby completely replace any previously recorded Bylaws or amendments thereto&quot; • &quot;Declaration&quot; means the Declaration recorded under Volume 1128, Page 911, and any amendments • Board power: &quot;Adopt, amend, repeal and enforce Rules and Regulations ... with respect to the interpretation and implementation of the Declaration, the operation of the Association, and the use of property and Lots within the Subdivision.&quot;" data-notes="This file materially strengthens the app’s authority-analysis branch because it directly ties later rules back to the declaration and expressly records modern board powers, meeting procedures, voting mechanisms, and adoption of rules under Texas Property Code references.">Inspect</button>
-          </div>
-        </article>
-
-        <article class="card" data-category="transfer" data-search="2005062032 dedicatory instruments articles incorporation bylaws 202.006 recording assignment authority">
-          <div class="meta">
-            <span class="badge transfer">Authority transfer</span>
-          </div>
-          <h3>2005062032 — Instrument to Record Dedicatory Instruments</h3>
-          <div class="excerpt">This 2005 filing records additional dedicatory instruments under Texas Property Code Section 202.006 and identifies the Association as subject to previously recorded restrictions plus an amendment/assignment filing, while attaching the Articles of Incorporation and Bylaws as recorded governance instruments.</div>
-          <div class="links">
-            <a class="btn" href="./files/2005062032-1.pdf" target="_blank" rel="noopener noreferrer">Open PDF</a>
-            <button class="btn detail-btn" data-title="2005062032 — Instrument to Record Dedicatory Instruments" data-type="Recorded authority / chain-of-title support" data-file="./files/2005062032-1.pdf" data-excerpt="The filing says it is being recorded pursuant to Texas Property Code Section 202.006 and lists: Reservations, Restrictions and Covenants for Columbia Lakes Subdivision (2005049586) and Amendment to Restrictions and Assignment of All Authority and Duties of the Developer (2005056149). It then records additional dedicatory instruments: Articles of Incorporation and By-laws." data-notes="This document is important because it bridges original restrictions and association governance instruments. It helps justify showing articles and bylaws as part of the same governing ecosystem rather than as isolated corporate paperwork.">Inspect</button>
-          </div>
-        </article>
-
-        <article class="card" data-category="policy overlay" data-search="2019044324 fining policy article iii architectural control dedicatory instruments section 209.002 enforcement">
-          <div class="meta">
-            <span class="badge policy">Policy / enforcement</span>
-            <span class="badge overlay">Operational overlay</span>
-          </div>
-          <h3>2019044324 — Fining Policy</h3>
-          <div class="excerpt">The 2019 fining policy replaces prior fining policies, defines capitalized terms by the original restrictions “as amended,” applies to violations of dedicatory instruments under Texas Property Code Section 209.002(4), and sets a specific $200 per day schedule for Article III architectural-control violations.</div>
-          <div class="links">
-            <a class="btn" href="./files/2019044324-1.pdf" target="_blank" rel="noopener noreferrer">Open PDF</a>
-            <button class="btn detail-btn" data-title="2019044324 — Fining Policy" data-type="Policy / enforcement overlay" data-file="./files/2019044324-1.pdf" data-excerpt="The policy says it replaces previous fining policies; adopts the meaning of terms from the Restrictions recorded in Volume 1128, Page 911, et seq., as amended; makes owners responsible for compliance with Dedicatory Instruments as defined by Section 209.002(4); and sets special fines for Article III architectural-control violations at $200.00 per day until corrected." data-notes="This file provides a concrete enforcement bridge from modern board policy back to the original restriction text. It is especially useful for the app’s authority view because it names both the declaration source and the statutory dedicatory-instrument concept.">Inspect</button>
-          </div>
-        </article>
-
-        <article class="card" data-category="original" data-search="original restrictions declaration foundation volume 1128 page 911">
-          <div class="meta">
-            <span class="badge original">Original intent</span>
-          </div>
-          <h3>Original declaration branch</h3>
-          <div class="excerpt">Keep this branch in the app as the baseline source for lot-use restrictions and original subdivision intent. The newer files above repeatedly derive meaning and authority from the original restrictions and their amendments.</div>
-          <div class="links">
-            <button class="btn detail-btn" data-title="Original declaration branch" data-type="Original intent / covenant source" data-file="Reference in existing app source set" data-excerpt="Multiple later instruments define the Declaration or Restrictions by reference to the original recorded restriction chain, especially Volume 1128, Page 911 and amendments." data-notes="This node should remain visually primary in the explorer because the added files reinforce, rather than replace, the original restriction branch as the authority base.">Inspect</button>
-          </div>
-        </article>
-
-      </div>
-    </section>
-  </main>
-
-  <aside class="side">
-    <div class="detail-card" id="detail">
-      <h3>Detail panel</h3>
-      <p>Select any <strong>Inspect</strong> button to view quoted language, authority notes, and the linked PDF path used for deployment.</p>
-      <blockquote>Use this panel to trace whether a document looks like an original covenant source, a recorded governance instrument, an authority-transfer bridge, or a later operational overlay.</blockquote>
-      <div class="small">Cloudflare Pages structure expected: root <code>index.html</code> and a sibling <code>files/</code> folder containing the PDFs.</div>
-    </div>
-
-    <div class="legend">
-      <div class="legend-item"><span class="dot" style="background:var(--color-primary)"></span> Original / amendment source</div>
-      <div class="legend-item"><span class="dot" style="background:var(--color-blue)"></span> Authority transfer / recording bridge</div>
-      <div class="legend-item"><span class="dot" style="background:var(--color-purple)"></span> Operational overlay / bylaws</div>
-      <div class="legend-item"><span class="dot" style="background:var(--color-warning)"></span> Policy / enforcement layer</div>
-    </div>
-
-    <div class="footer-note">This republished app package includes the three newly attached PDFs with cleaned relative filenames for static deployment.</div>
-  </aside>
-</div>
-
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Columbia Lakes Document Navigator</title>
+<style>
+:root{--bg:#f8fafc;--panel:#fff;--text:#0f172a;--muted:#475569;--origin:#dbeafe;--amend:#bfdbfe;--authority:#fce7d6;--record:#e5e7eb;--bylaws:#dcfce7;--rules:#fef3c7;--enforce:#fde68a;--shadow:0 10px 24px rgba(15,23,42,.08)}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Arial,sans-serif;color:var(--text);background:linear-gradient(180deg,#f8fafc,#eef2ff)}
+header{padding:22px 24px 18px;border-bottom:1px solid #dbe3ef;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20} h1{margin:0 0 8px;font-size:30px} .sub{color:var(--muted);max-width:1200px;line-height:1.5}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px} .tag{display:inline-flex;align-items:center;gap:8px;border:1px solid #d7dbe4;border-radius:999px;padding:6px 10px;background:#fff;font-size:13px} .sw{width:12px;height:12px;border-radius:999px}
+main{display:grid;grid-template-columns:410px 1fr;min-height:calc(100vh - 110px)} aside{border-right:1px solid #dbe3ef;background:#fff;padding:18px;overflow:auto;height:calc(100vh - 110px);position:sticky;top:110px} section.content{padding:22px;overflow:auto}
+.panel{border:1px solid #e5e7eb;border-radius:18px;padding:18px;box-shadow:var(--shadow);background:#fff} .panel h2{margin:0 0 8px;font-size:24px} .panel p{line-height:1.55} .small{font-size:13px;color:var(--muted)}
+.flow{margin-bottom:24px} .flow h2{margin:0 0 10px;font-size:22px} .flow p{margin:0 0 14px;color:var(--muted);line-height:1.5} .flowgrid{display:grid;grid-template-columns:repeat(3,minmax(280px,1fr));gap:16px}
+.lane{border:1px solid #dbe3ef;border-radius:20px;padding:16px;background:#ffffff;box-shadow:var(--shadow)} .lane h3{margin:0 0 10px;font-size:18px} .mini{display:flex;flex-direction:column;gap:12px}
+.miniCard{border:1px solid #cbd5e1;border-radius:14px;padding:12px 14px;background:#fff;cursor:pointer} .miniCard strong{display:block;font-size:15px;line-height:1.2} .miniCard span{display:block;color:#475569;font-size:12px;margin-top:4px}
+.miniCard.origin{background:var(--origin)} .miniCard.amend{background:var(--amend)} .miniCard.authority{background:var(--authority)} .miniCard.record{background:var(--record)} .miniCard.bylaws{background:var(--bylaws)} .miniCard.rules{background:var(--rules)} .miniCard.enforce{background:var(--enforce)} .arrow{font-size:14px;color:#64748b;text-align:center}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px} .controls input,.controls select{padding:10px 12px;border-radius:10px;border:1px solid #cbd5e1;font-size:14px;background:#fff} .toggle{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.toggle button{padding:9px 12px;border-radius:999px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;font-size:13px} .toggle button.active{background:#0f172a;color:#fff;border-color:#0f172a}
+.section{margin-bottom:28px} .section h2{margin:0 0 12px;font-size:22px} .section p{margin:0 0 12px;color:var(--muted);line-height:1.5} .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.card{border:1px solid #dbe3ef;border-radius:18px;padding:16px;box-shadow:var(--shadow);cursor:pointer;background:#fff;transition:transform .15s ease, box-shadow .15s ease} .card:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(15,23,42,.10)}
+.card.origin{background:var(--origin)} .card.amend{background:var(--amend)} .card.authority{background:var(--authority)} .card.record{background:var(--record)} .card.bylaws{background:var(--bylaws)} .card.rules{background:var(--rules)} .card.enforce{background:var(--enforce)}
+.card h3{margin:0 0 8px;font-size:20px;line-height:1.2} .meta{font-size:14px;font-weight:700;color:#334155;margin-bottom:10px} .quote{font-size:15px;line-height:1.55;color:#1e293b;margin-bottom:12px} .file{font-size:14px;color:#0f766e;font-weight:700}
+.rel{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px} .pill{background:#fff;border:1px solid #cbd5e1;border-radius:999px;padding:6px 10px;font-size:12px;color:#334155} .jump{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px} .jump a{font-size:12px;text-decoration:none;border:1px solid #cbd5e1;border-radius:999px;padding:6px 10px;background:#fff;color:#334155}
+.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:10px} .badge.original{background:#dbeafe;color:#1d4ed8} .badge.amended{background:#e0e7ff;color:#4338ca} .badge.overlay{background:#fef3c7;color:#92400e}
+@media (max-width:1150px){main{grid-template-columns:1fr} aside{position:relative;top:0;height:auto;border-right:none;border-bottom:1px solid #dbe3ef} .flowgrid{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>Columbia Lakes Document Navigator</h1>
+<div class="legend"><span class="tag"><span class="sw" style="background:var(--origin)"></span>Original declaration</span><span class="tag"><span class="sw" style="background:var(--amend)"></span>Declaration amendment</span><span class="tag"><span class="sw" style="background:var(--authority)"></span>Authority transfer</span><span class="tag"><span class="sw" style="background:var(--bylaws)"></span>Bylaws</span><span class="tag"><span class="sw" style="background:var(--rules)"></span>Operational rules</span><span class="tag"><span class="sw" style="background:var(--enforce)"></span>Fining / enforcement</span><span class="tag"><span class="sw" style="background:var(--record)"></span>Record / certificate</span></div></header>
+<main><aside><div class="panel" id="detailPanel"><h2>Select a document</h2><p class="small">Click a flow item or card. This panel will show quoted language, a live PDF link, and an authority classification.</p></div></aside><section class="content">
+<div class="flow"><h2>High-level flow</h2><p>Use this as a navigation map. Each item opens the detail panel and scrolls to the detailed card below.</p><div class="flowgrid">
+<div class="lane"><h3>Declaration chain</h3><div class="mini"><div class="miniCard origin" data-id="n1"><strong>1972 Base Restrictions</strong><span>Vol. 1128, Pg. 911</span></div><div class="arrow">↓ amended by</div><div class="miniCard amend" data-id="n2"><strong>1972 Amendment</strong><span>Vol. 1131, Pg. 678</span></div><div class="arrow">↓ continued by</div><div class="miniCard amend" data-id="n3"><strong>1973 Amendment</strong><span>Vol. 1137, Pg. 943</span></div><div class="arrow">↓ continued by</div><div class="miniCard amend" data-id="n4"><strong>1974 Amendments</strong><span>Vol. 1165, Pg. 945</span></div><div class="arrow">↓ later amended by</div><div class="miniCard amend" data-id="n6"><strong>2020 Declaration Amendment</strong><span>Clerk File 2020073665</span></div><div class="arrow">↓ listed in</div><div class="miniCard record" data-id="n7"><strong>2026 Management Certificate</strong><span>Clerk File 2026010021</span></div></div></div>
+<div class="lane"><h3>Authority transfer</h3><div class="mini"><div class="miniCard authority" data-id="n8"><strong>2005 Assignment</strong><span>Clerk File 2005049586</span></div><div class="arrow">↓ followed by</div><div class="miniCard authority" data-id="n9"><strong>2006 Amendment / Transfer</strong><span>Clerk File 2006053076</span></div><div class="arrow">↓ partially cleaned by</div><div class="miniCard authority" data-id="n10"><strong>2011 Release</strong><span>Clerk File 2011020503</span></div><div class="arrow">→ feeds governance branch</div><div class="miniCard bylaws" data-id="n11"><strong>2024 Amended & Restated Bylaws</strong><span>Clerk File 2024045970</span></div></div></div>
+<div class="lane"><h3>Governance and operations</h3><div class="mini"><div class="miniCard bylaws" data-id="n11"><strong>2024 Amended & Restated Bylaws</strong><span>Governance framework</span></div><div class="arrow">↙ board authority ↘</div><div class="miniCard rules" data-id="n12"><strong>2025 Community Common Rules</strong><span>Operational layer</span></div><div class="miniCard enforce" data-id="n13"><strong>2026 Fining Policy</strong><span>Enforcement layer</span></div><div class="miniCard rules" data-id="n14"><strong>2026 Common Area Rules</strong><span>Common-area operating rules</span></div></div></div>
+</div></div>
+<div class="controls"><input id="searchBox" type="text" placeholder="Search title, quote, or file id" /><select id="filterType"><option value="all">All document types</option><option value="origin">Original declaration</option><option value="amend">Declaration amendment</option><option value="authority">Authority transfer</option><option value="record">Record / certificate</option><option value="bylaws">Bylaws</option><option value="rules">Operational rules</option><option value="enforce">Fining / enforcement</option></select></div>
+<div class="toggle"><button class="active" data-mode="all">Show all</button><button data-mode="core">Original + amendments only</button><button data-mode="overlay">Operational overlays only</button><button data-mode="authority">Authority-transfer focus</button></div>
+<div id="sections"></div></section></main>
 <script>
-(function(){
-  const root=document.documentElement;
-  const toggle=document.querySelector('[data-theme-toggle]');
-  let mode=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
-  root.setAttribute('data-theme',mode);
-  toggle.addEventListener('click',()=>{mode=mode==='dark'?'light':'dark';root.setAttribute('data-theme',mode);});
-
-  const chips=[...document.querySelectorAll('.chip')];
-  const cards=[...document.querySelectorAll('.card')];
-  const search=document.getElementById('search');
-
-  function applyFilters(){
-    const active=document.querySelector('.chip.active')?.dataset.filter||'all';
-    const q=(search.value||'').toLowerCase().trim();
-    cards.forEach(card=>{
-      const cat=card.dataset.category||'';
-      const hay=(card.dataset.search+' '+card.innerText).toLowerCase();
-      const showCat=active==='all'||cat.includes(active);
-      const showText=!q||hay.includes(q);
-      card.style.display=(showCat&&showText)?'flex':'none';
-    });
-  }
-  chips.forEach(ch=>ch.addEventListener('click',()=>{chips.forEach(c=>c.classList.remove('active'));ch.classList.add('active');applyFilters();}));
-  search.addEventListener('input',applyFilters);
-
-  const detail=document.getElementById('detail');
-  document.querySelectorAll('.detail-btn').forEach(btn=>btn.addEventListener('click',()=>{
-    detail.innerHTML=`<h3>${btn.dataset.title}</h3>
-      <p><strong>Classification:</strong> ${btn.dataset.type}</p>
-      <p><strong>Deployment link:</strong> <a href="${btn.dataset.file}" target="_blank" rel="noopener noreferrer">${btn.dataset.file}</a></p>
-      <blockquote>${btn.dataset.excerpt}</blockquote>
-      <p>${btn.dataset.notes}</p>`;
-  }));
-})();
-</script>
-</body>
-</html>
+const docs = [{"id": "n1", "branch": "Declaration chain", "type": "origin", "title": "1972 Base Restrictions", "subtitle": "Vol. 1128, Pg. 911", "file_id": "file:2", "filename": "1972013527-1.pdf", "quote": "\u201csingle family residential purposes only\u201d / \u201cNo building... including homes, garages, outbuildings, fences and walks shall be erected... until\u201d approval.", "note": "Original land-use and architectural-control foundation for the declaration chain.", "rels": ["amended by 1972 Amendment", "foundation for later declaration changes"], "authority": "Original dedicatory instrument. This is the core covenant source rather than a later board-created rule."}, {"id": "n2", "branch": "Declaration chain", "type": "amend", "title": "1972 Amendment", "subtitle": "Vol. 1131, Pg. 678", "file_id": "file:6", "filename": "1972015408-1.pdf", "quote": "Expands \u201cSubdivision\u201d to Sections 1 and 2 and amends Article IV, Section 17 foundation-enclosure language.", "note": "Direct amendment to original declaration language.", "rels": ["continues from 1972 Base Restrictions", "followed by 1973 Amendment"], "authority": "Declaration amendment altering original covenant text."}, {"id": "n3", "branch": "Declaration chain", "type": "amend", "title": "1973 Amendment", "subtitle": "Vol. 1137, Pg. 943", "file_id": "file:3", "filename": "1972019687-1.pdf", "quote": "Part of the declaration chain later identified in the 2026 management certificate.", "note": "Continuation of original declaration amendment path.", "rels": ["follows 1972 Amendment", "followed by 1974 Amendments"], "authority": "Declaration amendment within the recorded chain."}, {"id": "n4", "branch": "Declaration chain", "type": "amend", "title": "1974 Amendments", "subtitle": "Vol. 1165, Pg. 945", "file_id": "file:4", "filename": "1974013497-1.pdf", "quote": "Part of the declaration chain for Sections 1\u20134 later listed in the management certificate.", "note": "Further amendment layer tied back to the original restrictions.", "rels": ["follows 1973 Amendment", "later followed by 2020 Declaration Amendment"], "authority": "Declaration amendment within the recorded chain."}, {"id": "n6", "branch": "Declaration chain", "type": "amend", "title": "2020 Declaration Amendment", "subtitle": "Clerk File 2020073665", "file_id": "file:17", "filename": "2020073665-1.pdf", "quote": "\u201cArticle VI, Section 1... is amended and replaced\u201d with developed-lot and undeveloped-lot maintenance charge limits.", "note": "Modern direct amendment to declaration substance.", "rels": ["follows 1974 Amendments", "listed in 2026 Management Certificate"], "authority": "Direct amendment to declaration substance, especially maintenance charges."}, {"id": "n7", "branch": "Declaration chain", "type": "record", "title": "2026 Management Certificate", "subtitle": "Clerk File 2026010021", "file_id": "file:12", "filename": "2026010021-1.pdf", "quote": "Lists the declaration chain: Vol. 1128 Pg. 911; Vol. 1131 Pg. 678; Vol. 1137 Pg. 943; Vol. 1165 Pg. 945; 2020073665; and the 2011 release.", "note": "Best evidence of what the HOA identifies as the current declaration record trail.", "rels": ["references prior declaration documents", "used by bylaws to define Declaration"], "authority": "Record notice identifying the governing declaration chain rather than creating new substantive covenants."}, {"id": "n5", "branch": "Parallel section branch", "type": "amend", "title": "1974 Section Five Restrictions", "subtitle": "Vol. 1210, Pg. 56", "file_id": "file:4", "filename": "1974013497-1.pdf", "quote": "Separate section-specific restrictions rather than a direct rewrite of the Sections 1\u20134 base text.", "note": "Parallel branch rather than a straight-line amendment to the core Sections 1\u20134 chain.", "rels": ["parallel to main declaration chain"], "authority": "Section-specific restrictive instrument, parallel to the main chain."}, {"id": "n8", "branch": "Authority transfer", "type": "authority", "title": "2005 Assignment", "subtitle": "Clerk File 2005049586", "file_id": "file:16", "filename": "2005049586-1.pdf", "quote": "Assignment document shifting rights/powers from original developer structure toward HOA control.", "note": "Authority-transfer bridge, not the original restriction text itself.", "rels": ["followed by 2006 Amendment / Transfer"], "authority": "Transfer / assignment instrument intended to move powers into HOA structure."}, {"id": "n9", "branch": "Authority transfer", "type": "authority", "title": "2006 Amendment / Transfer", "subtitle": "Clerk File 2006053076", "file_id": "file:15", "filename": "2006053076-1.pdf", "quote": "Amendment / assignment record referenced later in the management certificate chain.", "note": "Important bridge from original developer authority into association governance.", "rels": ["follows 2005 Assignment", "partially cleaned up by 2011 Release", "feeds into governance branch"], "authority": "Recorded amendment / transfer document supporting later HOA governance authority."}, {"id": "n10", "branch": "Authority transfer", "type": "authority", "title": "2011 Release", "subtitle": "Clerk File 2011020503", "file_id": "file:14", "filename": "2011020503-1.pdf", "quote": "2008 amendment is \u201creleased, withdrawn, invalidated and void in its entirety.\u201d", "note": "Cleans up the authority chain and negates a prior attempted amendment.", "rels": ["follows 2006 Amendment / Transfer", "referenced in 2026 Management Certificate"], "authority": "Release instrument that removes part of the prior amendment history."}, {"id": "n11", "branch": "Governance and operations", "type": "bylaws", "title": "2024 Amended & Restated Bylaws", "subtitle": "Clerk File 2024045970", "file_id": "file:7", "filename": "2024045970-1.pdf", "quote": "\u201cThese Bylaws replace and supersede any and all previous Bylaws.\u201d \u201cDeclaration\u201d means the restrictive covenant documents referred to in the current Management Certificate.", "note": "Modern governance framework; strongest claimed source of authority for board-made operating rules.", "rels": ["derives declaration definition from 2026 Management Certificate", "basis for later operating rules and fining policy"], "authority": "Recorded bylaws that appear to provide governance authority for rules, procedures, and enforcement layers."}, {"id": "n12", "branch": "Governance and operations", "type": "rules", "title": "2025 Community Common Rules", "subtitle": "Clerk File 2025048016", "file_id": "file:5", "filename": "2025048016-1.pdf", "quote": "Community/common operational rules layer; not the same as the original lot-use declaration language.", "note": "Operating rules for association-controlled context.", "rels": ["follows governance branch", "not superseded by 2026 Common Area Rules"], "authority": "Operational rules likely deriving from bylaw and common-area governance authority, not original declaration text."}, {"id": "n13", "branch": "Governance and operations", "type": "enforce", "title": "2026 Fining Policy", "subtitle": "Clerk File 2026022879", "file_id": "file:13", "filename": "2026022879-1.pdf", "quote": "Curable violations: $100/day; Article III Architectural Control violations: $200/day; tied to notice/hearing process under Texas Property Code Section 209.006.", "note": "Enforcement overlay; appears to derive from bylaws + recorded policy + existing dedicatory instruments.", "rels": ["built on bylaws / governance authority", "used to enforce declaration and rule violations"], "authority": "Enforcement instrument that appears to rely on recorded bylaws plus dedicatory instruments, with Chapter 209 supplying procedure rather than standalone substantive power."}, {"id": "n14", "branch": "Governance and operations", "type": "rules", "title": "2026 Common Area Rules", "subtitle": "within Clerk File 2026022879", "file_id": "file:13", "filename": "2026022879-1.pdf", "quote": "No signs, no fireworks, overnight parking restrictions, golf cart registration; states these rules do not supersede the 2025 Community Common Rules.", "note": "Common-area operating regime, not a direct restatement of original lot-use restrictions.", "rels": ["follows governance branch", "coexists with 2025 Community Common Rules"], "authority": "Operating rules that appear strongest when limited to common-area and association-management authority."}];
+const sectionsEl = document.getElementById('sections'); const detailPanel = document.getElementById('detailPanel'); const searchBox = document.getElementById('searchBox'); const filterType = document.getElementById('filterType'); const order = ['Declaration chain','Parallel section branch','Authority transfer','Governance and operations']; let mode='all';
+function classForAuthority(doc){ if(doc.type==='origin') return ['Original covenant source','original']; if(doc.type==='amend' && (doc.branch==='Declaration chain'||doc.branch==='Parallel section branch')) return ['Amended covenant layer','amended']; return ['Operational / governance overlay','overlay']; }
+function showDetail(doc){ const badge=classForAuthority(doc); detailPanel.innerHTML = `<h2>${doc.title}</h2><span class="badge ${badge[1]}">${badge[0]}</span><p class="small">${doc.subtitle}</p><p><strong>Quoted language</strong><br>${doc.quote}</p><p><strong>Why it matters</strong><br>${doc.note}</p><p><strong>Authority analysis</strong><br>${doc.authority}</p><p><strong>File reference</strong><br>${doc.file_id} · <a href="./files/${doc.filename}" target="_blank" rel="noopener noreferrer">${doc.filename}</a></p><div class="jump"><a href="#${doc.id}">Jump to card</a><a href="./files/${doc.filename}" target="_blank" rel="noopener noreferrer">Open PDF</a></div><p><strong>Relationships</strong></p><div class="rel">${doc.rels.map(r=>`<span class="pill">${r}</span>`).join('')}</div>`; }
+function modePass(doc){ if(mode==='all') return true; if(mode==='core') return ['origin','amend','record'].includes(doc.type) && doc.branch!=='Governance and operations'; if(mode==='overlay') return ['bylaws','rules','enforce'].includes(doc.type); if(mode==='authority') return doc.branch==='Authority transfer' || doc.id==='n11'; return true; }
+function render(){ const q=searchBox.value.toLowerCase().trim(); const f=filterType.value; sectionsEl.innerHTML=''; order.forEach(branch=>{ const items=docs.filter(d=>d.branch===branch).filter(d=>modePass(d)).filter(d=>f==='all'||d.type===f).filter(d=>!q||(d.title+' '+d.subtitle+' '+d.quote+' '+d.file_id+' '+d.filename+' '+d.note+' '+d.authority).toLowerCase().includes(q)); if(!items.length) return; const desc = branch==='Declaration chain'?'Original declaration documents and direct amendments to declaration text.':branch==='Parallel section branch'?'Section-specific restrictions that sit beside, not entirely inside, the main declaration line.':branch==='Authority transfer'?'Documents that appear to transfer, amend, or clean up authority from the original developer structure toward the HOA.':'Bylaws, common rules, and fining instruments used for modern governance and enforcement.'; const section=document.createElement('div'); section.className='section'; section.innerHTML=`<h2>${branch}</h2><p>${desc}</p><div class="grid"></div>`; const grid=section.querySelector('.grid'); items.forEach(doc=>{ const badge=classForAuthority(doc); const card=document.createElement('div'); card.className='card '+doc.type; card.id=doc.id; card.innerHTML=`<span class="badge ${badge[1]}">${badge[0]}</span><h3>${doc.title}</h3><div class="meta">${doc.subtitle}</div><div class="quote">${doc.quote}</div><div class="file">${doc.file_id} · <a href="./files/${doc.filename}" target="_blank" rel="noopener noreferrer">${doc.filename}</a></div><div class="rel">${doc.rels.map(r=>`<span class="pill">${r}</span>`).join('')}</div>`; card.addEventListener('click',()=>showDetail(doc)); grid.appendChild(card); }); sectionsEl.appendChild(section); }); document.querySelectorAll('.miniCard').forEach(el=>{ el.addEventListener('click',()=>{ const doc=docs.find(d=>d.id===el.dataset.id); if(doc){ showDetail(doc); document.getElementById(doc.id)?.scrollIntoView({behavior:'smooth',block:'center'}); } }); }); }
+searchBox.addEventListener('input', render); filterType.addEventListener('change', render); document.querySelectorAll('.toggle button').forEach(btn=>btn.addEventListener('click',()=>{ mode=btn.dataset.mode; document.querySelectorAll('.toggle button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); render(); })); render(); showDetail(docs[0]);
+</script></body></html>
